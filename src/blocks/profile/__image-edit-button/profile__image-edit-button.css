@@ -1,0 +1,24 @@
+.profile__image-edit-button {
+    position: absolute;
+    border-radius: 100px;
+    border: none;
+    width: 120px;
+    height: 120px;
+    padding: 0;
+    background-image: url("../../../images/profile-image-edit.svg");
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+}
+
+.profile__image-edit-button:hover {
+    cursor: pointer;
+    opacity: 0.7;
+    background-color: black;
+}
+
+@media screen and (max-width: 589px) {
+    .profile__image-edit-button {
+        top: 124px;
+    }
+}

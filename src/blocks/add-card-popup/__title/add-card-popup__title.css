@@ -1,0 +1,9 @@
+.add-card-popup__title {
+    margin: 34px auto auto 36px;
+}
+
+@media screen and (max-width: 589px) {
+    .add-card-popup__title {
+        margin: 25px auto auto 22px;
+    }
+}

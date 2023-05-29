@@ -1,0 +1,23 @@
+.profile__info {
+    min-height: 73px;
+    max-width: 580px;
+    color: #fff;
+    margin-top: auto;
+    margin-bottom: auto;
+    padding: 0;
+    margin-left: 30px;
+    display: flex;
+    flex-direction: row;
+}
+
+@media screen and (max-width: 885px) and (min-width: 590px) {
+    .profile__info {
+        width: 440px;
+    }
+}
+
+@media screen and (max-width: 589px) {
+    .profile__info {
+        margin-top: 26px;
+    }
+}

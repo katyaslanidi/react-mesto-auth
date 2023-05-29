@@ -1,0 +1,11 @@
+.popup__button_invalid {
+    background-color: #FFFFFF;
+    color: #000000;
+    border: 1px solid #000000;
+    border-radius: 2px;
+    opacity: 0.5;
+}
+
+.popup__button_invalid:hover {
+    cursor: auto;
+}

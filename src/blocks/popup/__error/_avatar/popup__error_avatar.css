@@ -1,0 +1,9 @@
+.popup__error_avatar {
+    top: 145px;
+}
+
+@media screen and (max-width: 589px) {
+    .popup__error_avatar {
+        top: 140px;
+    }
+}

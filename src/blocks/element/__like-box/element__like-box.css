@@ -1,0 +1,7 @@
+.element__like-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 15px;
+    align-items: center;
+}

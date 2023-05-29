@@ -1,0 +1,9 @@
+.popup__input_url {
+    margin-top: 35px;
+}
+
+@media screen and (max-width: 589px) {
+    .popup__input_url {
+        margin-top: 35px;
+    }
+}
