@@ -1,3 +1,5 @@
+import React  from 'react';
+
 function ImagePopup({ card, onClose }) {
   return (
     <div className={`overlay card-popup ${card.name && "overlay_opened"}`}>

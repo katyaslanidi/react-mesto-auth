@@ -21,6 +21,7 @@
 
 @import url(./blocks/header/header.css);
 @import url(./blocks/header/__logo/header__logo.css);
+@import url(./blocks/header/__link/header__link.css);
 
 @import url(./blocks/profile/profile.css);
 @import url(./blocks/profile/__image/profile__image.css);
@@ -80,3 +81,4 @@
 @import url(./blocks/auth/__input/_email/auth__input_email.css);
 @import url(./blocks/auth/__input/_password/auth__input_password.css);
 @import url(./blocks/auth/__button/auth__button.css);
+@import url(./blocks/auth/__link/auth__link.css);

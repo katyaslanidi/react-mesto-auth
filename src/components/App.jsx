@@ -1,7 +1,7 @@
+import React from 'react';
 import { useState, useEffect } from "react";
-// import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 
-// import { ProtectedRoute } from "./ProtectedRoute";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
@@ -12,11 +12,16 @@ import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import Login from "./Login";
 import Register from "./Register";
+import ProtectedRoute from './ProtectedRoute';
+import InfoTooltip from './InfoTooltip';
 import api from '../utils/api.js';
+import auth from '../utils/auth.js';
 
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
 function App() {
+
+  const navigate = useNavigate();
 
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
@@ -25,14 +30,22 @@ function App() {
   const [isEditAvatarPopupOpen, setEditAvatarPopup] = useState(false);
   const [selectedCard, setSelectedCard] = useState({});
 
+  const [isLoggedIn, setIsLoggedIn] = useState({});
+  const [userEmail, setUserEmail] = useState('');
+  const [isAuthOk, setIsAuthOk] = useState(false);
+  const [isInfoToolTipOpened, setIsInfoToolTipOpened] = useState(false);
+
+
   useEffect(() => {
-    Promise.all([api.getUserInfo(), api.getInitialCards()])
-      .then(([user, cards]) => {
-        setCurrentUser(user);
-        setCards(cards);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+    if (isLoggedIn) {
+      Promise.all([api.getUserInfo(), api.getInitialCards()])
+        .then(([user, cards]) => {
+          setCurrentUser(user);
+          setCards(cards);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [isLoggedIn]);
 
   const handleCardLike = (card) => {
     const isLiked = card.likes.some(i => i._id === currentUser._id);
@@ -81,6 +94,106 @@ function App() {
       .catch((err) => console.log(err));
   }
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    auth.checkToken(token)
+      .then((res) => {
+        setIsLoggedIn(true);
+        setUserEmail(res.data.email);
+        navigate('/');
+      })
+      .catch((err) => {
+        setIsLoggedIn(false);
+        console.log(err);
+      });
+  }, []);
+
+  const handleRegister = (email, password) => {
+    auth.register(email, password)
+      .then(() => {
+        setIsAuthOk(true);
+        navigate('/sing-in');
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsInfoToolTipOpened(true);
+      });
+  }
+
+  const handleAuthorize = (email, password) => {
+    auth.authorize(email, password)
+      .then((res) => {
+        setIsLoggedIn(true);
+        setUserEmail(email);
+        navigate('/');
+        localStorage.setItem('token', res.token);
+      })
+      .catch((err) => console.log(err));
+  }
+
+  const handleSingOut = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem('token');
+  }
+
+  if (isLoggedIn === null) {
+    return;
+  }
+
+  // const handleRegister = ({ email, password }) => {
+  //   return auth.register(email, password)
+  //     .then((res) => {
+  //       if (res) {
+  //         setIsAuthOk(true);
+  //         navigate('/sing-in');
+  //       }
+  //     })
+  //     .catch(err => {
+  //       setIsAuthOk(false);
+  //       console.log(`Произошла ошибка: ${err}`)
+  //     })
+  //     .finally(() => setIsInfoToolTipOpened(true));
+  // }
+
+  // const handleAuthorize = ({ password, email }) => {
+  //   return auth.authorize(email, password).then((res) => {
+  //     console.log(res);
+  //     if (res.token) {
+  //       setUserEmail(email);
+  //       console.log(userEmail);
+  //       console.log(email);
+  //       setIsLoggedIn(true);
+  //       localStorage.setItem('jwt', res.token);
+  //       navigate('/');
+
+  //     }
+  //   })
+  // }
+
+  // const handleSingOut = () => {
+  //   localStorage.removeItem('jwt');
+  //   setIsLoggedIn(false);
+  //   navigate('/sing-in');
+  // }
+
+  // // const tokenCheck = () => {
+  // //   const jwt = localStorage.getItem('jwt');
+  // //   if (jwt) {
+  // //     auth.checkToken(jwt)
+  // //       .then(res => {
+  // //         setIsLoggedIn(true);
+  // //         setUserEmail(res.data.email);
+  // //         navigate('/');
+  // //       })
+  // //       .catch(err => console.log(err));
+  // //   }
+  // // }
+
+  // // useEffect(() => {
+  // //   tokenCheck();
+  // // }, [])
+
   const handleEditProfileClick = () => {
     setEditProfilePopup(true);
   }
@@ -122,39 +235,62 @@ function App() {
     return () => document.removeEventListener('keydown', handleEscapeKey);
   })
 
-  // const [isLoggenIn, setLoggedIn] = useState(false);
-  // const [isSingIn, setSingIn] = useState(false);
-
   return (
-    // <Routes>
-    //   <ProtectedRoute element={Main} isLoggedIn={isLoggenIn} />
-    //   <Route path="/" element={<ProtectedRoute element={Main} isLoggedIn={isLoggenIn} />} />
-    //   <Route path="/signup" element={Register} />
-    //   <Route path="/signin" element={Login} />
-    //   <Route path="/success" element={InfoTooltip} />
-    //   <Route path="/fail" element={InfoTooltip} />
-    //   <Route path="/" element={isSingIn ? <Navigate to="/success" replace/> : <Navigate to="/fail" replace/>} />
-
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
 
-        <Header />
+        <Header
+          userEmail={userEmail}
+          handleSingOut={handleSingOut}
+        />
+        <Routes>
+          <Route
+            path="/sing-up"
+            element={
+              <div>
+                <Register
+                  isLoggedIn={setIsLoggedIn}
+                  handleRegister={handleRegister}
+                />
+              </div>
+            }
+          />
+          <Route
+            path="/sing-in"
+            element={
+              <div>
+                <Login
+                  isLoggedIn={setIsLoggedIn}
+                  handleAuthorize={handleAuthorize}
+                />
+              </div>
+            }
+          />
+          <Route
+            path="*"
+            element={isLoggedIn ? <Navigate to='/' /> : <Navigate to='/sing-up' />}
+          />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute
+                element={Main}
+                cards={cards}
+                onEditProfile={handleEditProfileClick}
+                onAddPlace={handleAddPlaceClick}
+                onEditAvatar={handleEditAvatarClick}
+                onCardClick={handleCardClick}
+                onCardLike={handleCardLike}
+                onCardDelete={handleCardDelete}
+              />
+            }
+          />
 
-        <Register />
-
-        {/* <Main
-          cards={cards}
-          onEditProfile={handleEditProfileClick}
-          onAddPlace={handleAddPlaceClick}
-          onEditAvatar={handleEditAvatarClick}
-          onCardClick={handleCardClick}
-          onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
-        /> */}
+        </Routes>
 
         <Footer />
 
-        {/* <EditProfilePopup
+        <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
           onUpdateUser={handleUpdateUser}
@@ -182,7 +318,14 @@ function App() {
         <ImagePopup
           card={selectedCard}
           onClose={closeAllPopups}
-        ></ImagePopup> */}
+        ></ImagePopup>
+
+        <InfoTooltip
+          name={"tool-tip"}
+          isOpen={isInfoToolTipOpened}
+          onClose={closeAllPopups}
+          isAuthOk={isAuthOk}
+        />
 
       </div>
     </CurrentUserContext.Provider>
