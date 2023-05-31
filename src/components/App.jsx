@@ -30,11 +30,27 @@ function App() {
   const [isEditAvatarPopupOpen, setEditAvatarPopup] = useState(false);
   const [selectedCard, setSelectedCard] = useState({});
 
-  const [isLoggedIn, setIsLoggedIn] = useState({});
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [isAuthOk, setIsAuthOk] = useState(false);
   const [isInfoToolTipOpened, setIsInfoToolTipOpened] = useState(false);
 
+  function checkToken() {
+    const token = localStorage.getItem('token')
+    if (token) {
+      auth.checkToken(token)
+        .then((res) => {
+          if (res) {
+            setIsLoggedIn(true);
+            navigate('/');
+            setUserEmail(res.data.email);
+          } else {
+            setIsLoggedIn(false);
+          }
+        })
+        .catch((err) => console.log(`Возникла ошибка: ${err}`));
+    }
+  }
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -45,6 +61,10 @@ function App() {
         })
         .catch((err) => console.log(err));
     }
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    checkToken();
   }, [isLoggedIn]);
 
   const handleCardLike = (card) => {
@@ -94,20 +114,20 @@ function App() {
       .catch((err) => console.log(err));
   }
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
 
-    auth.checkToken(token)
-      .then((res) => {
-        setIsLoggedIn(true);
-        setUserEmail(res.data.email);
-        navigate('/');
-      })
-      .catch((err) => {
-        setIsLoggedIn(false);
-        console.log(err);
-      });
-  }, []);
+  //   auth.checkToken(token)
+  //     .then((res) => {
+  //       setIsLoggedIn(true);
+  //       setUserEmail(res.data.email);
+  //       navigate('/');
+  //     })
+  //     .catch((err) => {
+  //       setIsLoggedIn(false);
+  //       console.log(err);
+  //     });
+  // }, []);
 
   const handleRegister = (email, password) => {
     auth.register(email, password)
@@ -137,9 +157,9 @@ function App() {
     localStorage.removeItem('token');
   }
 
-  if (isLoggedIn === null) {
-    return;
-  }
+  // if (isLoggedIn === null) {
+  //   return;
+  // }
 
   // const handleRegister = ({ email, password }) => {
   //   return auth.register(email, password)
@@ -274,14 +294,18 @@ function App() {
             path="/"
             element={
               <ProtectedRoute
-                element={Main}
-                cards={cards}
-                onEditProfile={handleEditProfileClick}
-                onAddPlace={handleAddPlaceClick}
-                onEditAvatar={handleEditAvatarClick}
-                onCardClick={handleCardClick}
-                onCardLike={handleCardLike}
-                onCardDelete={handleCardDelete}
+                element={
+                  <Main
+                    cards={cards}
+                    onEditProfile={handleEditProfileClick}
+                    onAddPlace={handleAddPlaceClick}
+                    onEditAvatar={handleEditAvatarClick}
+                    onCardClick={handleCardClick}
+                    onCardLike={handleCardLike}
+                    onCardDelete={handleCardDelete}
+                  />
+                }
+                isLoggedIn={isLoggedIn}
               />
             }
           />
