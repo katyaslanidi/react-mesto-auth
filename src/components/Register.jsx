@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Register({ isLoggedIn, handleRegister }) {
-
-    // const navigate = useNavigate();
-
-    // if (isLoggedIn) {
-    //     navigate('/');
-    // }
 
     useEffect(() => {
         isLoggedIn(true);

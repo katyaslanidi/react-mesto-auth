@@ -35,7 +35,7 @@ function App() {
   const [isAuthOk, setIsAuthOk] = useState(false);
   const [isInfoToolTipOpened, setIsInfoToolTipOpened] = useState(false);
 
-  function checkToken() {
+  const checkToken = () => {
     const token = localStorage.getItem('token')
     if (token) {
       auth.checkToken(token)
@@ -53,6 +53,10 @@ function App() {
   }
 
   useEffect(() => {
+    checkToken();
+  }, [isLoggedIn]);
+
+  useEffect(() => {
     if (isLoggedIn) {
       Promise.all([api.getUserInfo(), api.getInitialCards()])
         .then(([user, cards]) => {
@@ -61,10 +65,6 @@ function App() {
         })
         .catch((err) => console.log(err));
     }
-  }, [isLoggedIn]);
-
-  useEffect(() => {
-    checkToken();
   }, [isLoggedIn]);
 
   const handleCardLike = (card) => {
@@ -114,21 +114,6 @@ function App() {
       .catch((err) => console.log(err));
   }
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem('token');
-
-  //   auth.checkToken(token)
-  //     .then((res) => {
-  //       setIsLoggedIn(true);
-  //       setUserEmail(res.data.email);
-  //       navigate('/');
-  //     })
-  //     .catch((err) => {
-  //       setIsLoggedIn(false);
-  //       console.log(err);
-  //     });
-  // }, []);
-
   const handleRegister = (email, password) => {
     auth.register(email, password)
       .then(() => {
@@ -137,8 +122,8 @@ function App() {
       })
       .catch((err) => {
         console.log(err);
-        setIsInfoToolTipOpened(true);
-      });
+      })
+      .finally(() => setIsInfoToolTipOpened(true));
   }
 
   const handleAuthorize = (email, password) => {
@@ -156,63 +141,6 @@ function App() {
     setIsLoggedIn(false);
     localStorage.removeItem('token');
   }
-
-  // if (isLoggedIn === null) {
-  //   return;
-  // }
-
-  // const handleRegister = ({ email, password }) => {
-  //   return auth.register(email, password)
-  //     .then((res) => {
-  //       if (res) {
-  //         setIsAuthOk(true);
-  //         navigate('/sing-in');
-  //       }
-  //     })
-  //     .catch(err => {
-  //       setIsAuthOk(false);
-  //       console.log(`Произошла ошибка: ${err}`)
-  //     })
-  //     .finally(() => setIsInfoToolTipOpened(true));
-  // }
-
-  // const handleAuthorize = ({ password, email }) => {
-  //   return auth.authorize(email, password).then((res) => {
-  //     console.log(res);
-  //     if (res.token) {
-  //       setUserEmail(email);
-  //       console.log(userEmail);
-  //       console.log(email);
-  //       setIsLoggedIn(true);
-  //       localStorage.setItem('jwt', res.token);
-  //       navigate('/');
-
-  //     }
-  //   })
-  // }
-
-  // const handleSingOut = () => {
-  //   localStorage.removeItem('jwt');
-  //   setIsLoggedIn(false);
-  //   navigate('/sing-in');
-  // }
-
-  // // const tokenCheck = () => {
-  // //   const jwt = localStorage.getItem('jwt');
-  // //   if (jwt) {
-  // //     auth.checkToken(jwt)
-  // //       .then(res => {
-  // //         setIsLoggedIn(true);
-  // //         setUserEmail(res.data.email);
-  // //         navigate('/');
-  // //       })
-  // //       .catch(err => console.log(err));
-  // //   }
-  // // }
-
-  // // useEffect(() => {
-  // //   tokenCheck();
-  // // }, [])
 
   const handleEditProfileClick = () => {
     setEditProfilePopup(true);
@@ -232,6 +160,7 @@ function App() {
     setEditProfilePopup(false);
     setAddPlacePopup(false);
     setEditAvatarPopup(false);
+    setIsInfoToolTipOpened(false);
     setSelectedCard({});
   }
 
@@ -258,7 +187,6 @@ function App() {
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-
         <Header
           userEmail={userEmail}
           handleSingOut={handleSingOut}
@@ -345,7 +273,6 @@ function App() {
         ></ImagePopup>
 
         <InfoTooltip
-          name={"tool-tip"}
           isOpen={isInfoToolTipOpened}
           onClose={closeAllPopups}
           isAuthOk={isAuthOk}
@@ -353,7 +280,6 @@ function App() {
 
       </div>
     </CurrentUserContext.Provider>
-    // </Routes>
   );
 }
 

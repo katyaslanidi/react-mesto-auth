@@ -1,8 +1,8 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 
-const ProtectedRoute = (props) => {
+const ProtectedRoute = ({ element, isLoggedIn }) => {
     return (
-      props.isLoggedIn ? props.element : <Navigate to="/sign-in" replace />
+      isLoggedIn ? element : <Navigate to="/sign-in" replace />
   )};
 export default ProtectedRoute;

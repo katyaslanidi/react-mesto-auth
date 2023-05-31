@@ -2,10 +2,10 @@ import React from "react";
 import success from '../images/Success.png';
 import error from '../images/Error.png';
 
-function InfoTooltip({ name, isOpen, onClose, isAuthOk }) {
+function InfoTooltip({ isOpen, onClose, isAuthOk }) {
     return (
-        <div className={`overlay ${name}-popup` + (isOpen ? 'overlay_opened' : '')}>
-            <div className="popup">
+        <div className={`overlay ${isOpen ? 'overlay_opened' : ''}`}>
+            <div className="popup popup__info">
                 <button 
                     className="popup__close" 
                     type="button" 
