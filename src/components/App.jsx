@@ -118,9 +118,11 @@ function App() {
     auth.register(email, password)
       .then(() => {
         setIsAuthOk(true);
+        setIsLoggedIn(true);
         navigate('/sing-in');
       })
       .catch((err) => {
+        setIsAuthOk(false);
         console.log(err);
       })
       .finally(() => setIsInfoToolTipOpened(true));
@@ -134,7 +136,11 @@ function App() {
         navigate('/');
         localStorage.setItem('token', res.token);
       })
-      .catch((err) => console.log(err));
+      .catch((err) =>{ 
+        setIsAuthOk(false);
+        setIsInfoToolTipOpened(true);
+        console.log(err);
+      });
   }
 
   const handleSingOut = () => {
@@ -197,7 +203,6 @@ function App() {
             element={
               <div>
                 <Register
-                  isLoggedIn={setIsLoggedIn}
                   handleRegister={handleRegister}
                 />
               </div>
@@ -208,7 +213,6 @@ function App() {
             element={
               <div>
                 <Login
-                  isLoggedIn={setIsLoggedIn}
                   handleAuthorize={handleAuthorize}
                 />
               </div>

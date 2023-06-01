@@ -1,10 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-function Login({ isLoggedIn, handleAuthorize }) {
-    
-    useEffect(() => {
-        isLoggedIn(true);
-    }, []);
+function Login({ handleAuthorize }) {
 
     const [userData, setUserData] = useState({
         email: '',
